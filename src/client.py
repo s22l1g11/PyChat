@@ -1,3 +1,4 @@
+import pyNotificationCenter
 # TCP Client Code
 host=raw_input("Please enter server hostname:  ") 
 if host == '': host="127.0.0.1"
@@ -17,6 +18,7 @@ s.send(nick)	# sending the nickname
 msg=s.recv(1024)            # Receives data upto 1024 bytes and stores in variables msg
  
 print "Message from server : " + msg
+pyNotificationCenter.notify("PyChat", "Server says:", msg, sound=True)
 
 while True:
 	s.send(input())
