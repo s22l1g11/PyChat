@@ -1,27 +1,52 @@
 import pyNotificationCenter
-# TCP Client Code
-host=raw_input("Please enter server hostname:  ") 
-if host == '': host="127.0.0.1"
-#host="127.0.0.1"            # Set the server address to variable host
- 
-port=4446               # Sets the variable port to 4444
- 
-from socket import *             # Imports socket module
- 
-s=socket(AF_INET, SOCK_STREAM)      # Creates a socket
- 
-s.connect((host,port))          # Connect to server address
+import socket
 
-nick=raw_input("Please choose a username: ")	# choosing a nickname for the server
-s.send(nick)	# sending the nickname
+class Client:
 
-msg=s.recv(1024)            # Receives data upto 1024 bytes and stores in variables msg
- 
-print "Message from server : " + msg
-pyNotificationCenter.notify("PyChat", "Server says:", msg, sound=True)
+	# writing our attributes
+	host = ""
+	port = ""
+	nick = ""
+	sock = ""
 
-while True:
-	s.send(input())
- 
-s.close()                            # Closes the socket 
-# End of code
+	# writing the constructor
+	def __init__(self):
+		# asking for host ip
+		Client.host=raw_input("Please enter server hostname:  ") 
+		if	Client.host == '': host="127.0.0.1" # if host is empty use localhost as standard
+		Client.port=4446 # port is similar in the whole system
+		# setting our socket var
+		Client.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		Client.sock.connect((Client.host, Client.port))
+		Client.nick = input("Please choose a username: ")
+		Client.sock.send(Client.nick)
+		welcome=Client.sock.recv(1024) # receive welcome msg with data upto 1024 bytes
+		print("Message from server: "+welcome)
+		self.serverNotification(welcome)
+
+	def connect(self):
+		sock = socket(AF_INET, SOCK_STREAM)
+		return sock.connect((Client.host, Client.port))
+
+	def serverNotification(self, message):
+		pyNotificationCenter.notify("PyChat", "Server says:", message, sound=True)
+
+	def sendMessage(self):
+		message = input()
+		Client.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		Client.sock.connect((Client.host, Client.port))
+		Client.sock.send(message)
+		reply=Client.sock.recv(1024)
+		print("Reply: "+reply)
+
+	def closeSocket(self):
+		print("System shutdown...")
+		Client.sock.close()
+
+	def __del__(self):
+		self.closeSocket()
+
+import client
+client = Client()
+while 1:
+	client.sendMessage()
