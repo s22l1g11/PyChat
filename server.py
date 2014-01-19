@@ -5,7 +5,7 @@ port=4446                   # Sets the variable port to 4444
 from socket import *                # Imports socket module
  
 s=socket(AF_INET, SOCK_STREAM)
-s.close()
+#s.close() was for debugging
 s.bind((host,port))                 # Binds the socket. Note that the input to 
                                             # the bind function is a tuple
 
