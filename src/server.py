@@ -26,7 +26,7 @@ while True:
 		data = "Hello "+message
 	elif '/say ' in message:
 		sender = re.findall('\[(.*?)\]', message)
-		message = message.replace("/send ","",1)
+		message = message.replace("/say ","",1)
 		#message = message.replace(sender,"",1)
 		data = message
 	elif '/shutdown' in message:
@@ -34,6 +34,11 @@ while True:
 		q.send(data)
 		s.close()
 		break
+	elif '/rename' in message:
+		data = "reanming accepted!"
+	elif '/help ' in message:
+		print("hello!")
+		data = "You can use the following commands:\n/say [message] - to say something\n/rename [new username] - to change your username\n/help - to display this menue"
 
 	q.send(data)                        # Sends data to client
 	

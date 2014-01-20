@@ -46,8 +46,21 @@ class Client:
 			print(reply)
 			self.shutDown()
 
+		if '/rename ' in message: # enable renaming
+			oldNick = Client.nick
+			Client.nick = message.replace("/rename ","",1)
+			print "Your new username is: "+Client.nick
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock.connect((Client.host, Client.port))
+			sock.send("/rename")
+
 		if '/exit' in message: # quitting the program by using /exit
 			self.closeSocket()
+
+		if '/help ' in message:
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock.connect((Client.host, Client.port))
+			sock.send("/help")
 
 		reply=sock.recv(1024)
 		print(reply)
