@@ -7,7 +7,6 @@ class Client:
 	host = ""
 	port = ""
 	nick = ""
-	sock = ""
 
 	# writing the constructor
 	def __init__(self):
@@ -16,11 +15,11 @@ class Client:
 		if	Client.host == '': host="127.0.0.1" # if host is empty use localhost as standard
 		Client.port=4446 # port is similar in the whole system
 		# setting our socket var
-		Client.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		Client.sock.connect((Client.host, Client.port))
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.connect((Client.host, Client.port))
 		Client.nick = input("Please choose a username: ")
-		Client.sock.send(Client.nick)
-		welcome=Client.sock.recv(1024) # receive welcome msg with data upto 1024 bytes
+		sock.send("/name " + Client.nick)
+		welcome=sock.recv(1024) # receive welcome msg with data upto 1024 bytes
 		print("Message from server: "+welcome)
 		self.serverNotification(welcome)
 
@@ -32,16 +31,37 @@ class Client:
 		pyNotificationCenter.notify("PyChat", "Server says:", message, sound=True)
 
 	def sendMessage(self):
+		# getting input from the user and determing which command was used...
 		message = input()
-		Client.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		Client.sock.connect((Client.host, Client.port))
-		Client.sock.send(message)
-		reply=Client.sock.recv(1024)
-		print("Reply: "+reply)
+		if '/say' in message: # send a message if the user used /send
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock.connect((Client.host, Client.port))
+			sock.send(Client.nick+" wrote: "+message)
+
+		if '/shutdown' in message: # remote shutdown of server and client
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock.connect((Client.host, Client.port))
+			sock.send('/shutdown')
+			reply=sock.recv(1024)
+			print(reply)
+			self.shutDown()
+
+		if '/exit' in message: # quitting the program by using /exit
+			self.closeSocket()
+
+		reply=sock.recv(1024)
+		print(reply)
 
 	def closeSocket(self):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.connect((Client.host, Client.port))
 		print("System shutdown...")
-		Client.sock.close()
+		sock.close()
+		exit(0)
+
+	def shutDown(self):
+		print("System shutdown...")
+		exit(0)
 
 	def __del__(self):
 		self.closeSocket()

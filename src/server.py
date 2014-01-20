@@ -3,6 +3,7 @@
 host="127.0.0.1"                # Set the server address to variable host
 port=4446                   # Sets the variable port to 4444
 from socket import *                # Imports socket module
+import re
  
 s=socket(AF_INET, SOCK_STREAM)
 #s.close() was for debugging
@@ -17,10 +18,23 @@ while True:
 	 
 	q,addr=s.accept()               # Accepts incoming request from client and returns
 	                                            # socket and address to variables q and addr
-	nick = q.recv(1024)
-	print nick + " entered the room."
-	data = "Hello "+nick
-	 
+	message = q.recv(1024)
+
+	if '/name ' in message:
+		message = message.replace("/name ","",1)
+		print message + " entered the room."
+		data = "Hello "+message
+	elif '/say ' in message:
+		sender = re.findall('\[(.*?)\]', message)
+		message = message.replace("/send ","",1)
+		#message = message.replace(sender,"",1)
+		data = message
+	elif '/shutdown' in message:
+		data = "Stopping the server..."
+		q.send(data)
+		s.close()
+		break
+
 	q.send(data)                        # Sends data to client
 	
 
