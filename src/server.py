@@ -35,8 +35,8 @@ while True:
 		s.close()
 		break
 	elif '/rename' in message:
-		data = "reanming accepted!"
-	elif '/help ' in message:
+		data = "renaming accepted!"
+	elif '/help' in message:
 		print("hello!")
 		data = "You can use the following commands:\n/say [message] - to say something\n/rename [new username] - to change your username\n/help - to display this menue"
 
