@@ -1,6 +1,8 @@
 # TCP Server Code
- 
-host="127.0.0.1"                # Set the server address to variable host
+# asking for host ip
+host=raw_input("Please enter server hostname:  ") 
+if host == '': host="127.0.0.1" # if host is empty use localhost as standard
+#host="127.0.0.1"                # Set the server address to variable host
 port=4446                   # Sets the variable port to 4444
 from socket import *                # Imports socket module
 import re
